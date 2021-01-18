@@ -28,8 +28,7 @@ public class operation {
                 cur=in.charAt(i);
                 pre=opestack.peek();
                 ope=getpri(pre,cur);
-                if(i==len-1&&readstack.size()==2&&readstack.peek()=='N')
-                    return;
+                if(i==len-1&&readstack.size()==2&&readstack.peek()=='N') return;
                 switch(ope){
                     case ' ':
                         System.out.println("E");
@@ -40,6 +39,10 @@ public class operation {
                         System.out.println("I"+cur);
                         break;
                     case '=':
+                        readstack.push(cur);
+                        opestack.push(cur);
+                        System.out.println("I"+cur);
+                        break;
                     case '>':
                         StringBuilder stringBuilder=new StringBuilder();
                         while(true){
@@ -110,7 +113,7 @@ public class operation {
 
         public static void main(String[] args) throws IOException {
             //String file="E:\\1821大三上学习资料\\编译原理_邵兵\\ope\\src\\input.txt";
-            String file=args[0];
+           String file=args[0];
             opestack.push('#');
             readstack.push('#');
             gramlist.add("N+N");
@@ -122,7 +125,7 @@ public class operation {
             StringBuilder in = new StringBuilder(input);
            // System.out.println(in);
             in.append('#');
-            System.out.println(in);
+            //System.out.println(in);
             analyze(in.toString());
         }
     }
