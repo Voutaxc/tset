@@ -7,26 +7,27 @@ public class operation {
     static Stack<Character> readstack=new Stack<>();
     static Stack<Character> opestack=new Stack<>();
     static List<String> gramlist = new ArrayList<String>();
-        static char[] tsymbol = {'+', '*', 'i', '(', ')', '#'};
-        static char[] priority = {' ', '<', '>', '='};
-        static int[][] table = {{2, 1, 1, 1, 2, 2},
-                {2, 2, 1, 1, 2, 2},
-                {2, 2, 0, 0, 2, 2},
-                {1, 1, 1, 1, 3, 2},
-                {2, 2, 0, 0, 2, 2},
-                {1, 1, 1, 1, 0, 0}};
+        static char[] symbol={'+','*','i','(',')','#'};
+        static char[] pri = {' ','<','>','='};
+        static int[][] ptable=
+                {{1,-1,-1,-1,1,1},
+                {1,1,-1,-1,1,1},
+                {1,1,2,2,1,1},
+                {-1,-1,-1,-1,0,2},
+                {1,1,2,2,1,1},
+                {-1,-1,-1,-1,2,0}};
 
-
+//-1  < 0=  1> 2 " "
 
 
         public static void analyze(String in) {
             int len=in.length();
-            char  ope,cur,pre;
+            char ope,cur,pre;
             for(int i=0;i<len;i++)
             {
                 cur=in.charAt(i);
                 pre=opestack.peek();
-                ope=getope(pre,cur);
+                ope=getpri(pre,cur);
                 if(i==len-1&&readstack.size()==2&&readstack.peek()=='N')
                     return;
                 switch(ope){
@@ -36,20 +37,20 @@ public class operation {
                     case '<':
                         readstack.push(cur);
                         opestack.push(cur);
-                        System.out.println("I" + cur);
+                        System.out.println("I"+cur);
                         break;
                     case '=':
                     case '>':
-                        StringBuilder stringBuilder = new StringBuilder();
+                        StringBuilder stringBuilder=new StringBuilder();
                         while(true){
-                            char popc = readstack.pop();
+                            char popc=readstack.pop();
                             if(terminate(popc))
                                 opestack.pop();
-                            if(popc == '#'){
+                            if(popc=='#'){
                                 System.out.println("RE");
                                 return;
                             }
-                            stringBuilder.insert(0, popc);
+                            stringBuilder.insert(0,popc);
                             if(gramlist.contains(stringBuilder.toString())){
                                 readstack.push('N');
                                 i--;
@@ -62,68 +63,46 @@ public class operation {
             }
         }
 
-        public static boolean terminate(char c) {
-            if(c!='+' && c!='*' && c!='i' && c!='#' && c!='(' && c!=')')
-                return false;
-            else
+        public static boolean terminate(char c){
+            if(c=='+'||c=='*'||c=='i'||c=='#'||c=='('||c==')')
                 return true;
+            else
+                return false;
         }
 
-        public static char getope(char prev, char cur){
-            int iprev=0, jcur=0;
-            switch(prev){
-                case '+':
-                    iprev = 0;
+        public static char getpri(char pre,char cur){
+            int lpre=0, lcur=0;
+            for(int i=0;i<6;i++)
+            {
+                if(pre==symbol[i])
+                {
+                    lpre=i;
                     break;
-                case '*':
-                    iprev = 1;
-                    break;
-                case 'i':
-                    iprev = 2;
-                    break;
-                case '(':
-                    iprev = 3;
-                    break;
-                case ')':
-                    iprev = 4;
-                    break;
-                case '#':
-                    iprev = 5;
-                    break;
-                default:
-                    return ' ';
+                }
+                if(i==5)
+                  return ' ';
             }
-            switch(cur){
-                case '+':
-                    jcur = 0;
+
+            for(int i=0;i<6;i++)
+            {
+                if(cur==symbol[i])
+                {
+                    lcur=i;
                     break;
-                case '*':
-                    jcur = 1;
-                    break;
-                case 'i':
-                    jcur = 2;
-                    break;
-                case '(':
-                    jcur = 3;
-                    break;
-                case ')':
-                    jcur = 4;
-                    break;
-                case '#':
-                    jcur = 5;
-                    break;
-                default:
-                    return  ' ';
-            }
-            switch(table[iprev][jcur]){
-                case 0:
+                }
+                if(i==5)
                     return ' ';
-                case 1:
+
+            }
+            switch(ptable[lpre][lcur]){
+                case -1:
                     return '<';
-                case 2:
-                    return '>';
-                case 3:
+                case 0:
                     return '=';
+                case 1:
+                    return '>';
+                case 2:
+                    return ' ';
                 default:
                     return ' ';
             }
@@ -143,6 +122,7 @@ public class operation {
             StringBuilder in = new StringBuilder(input);
            // System.out.println(in);
             in.append('#');
+            System.out.println(in);
             analyze(in.toString());
         }
     }
